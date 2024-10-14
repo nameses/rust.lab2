@@ -1,33 +1,30 @@
 use std::io::{self, Write};
 
+static mut TOTAL_RESULT: f64 = 0.0;
+
 fn main() {
+    println!("Choose mode:");
     println!("1. Standard Calculator");
     println!("2. RPN Calculator");
 
     let mut mode = String::new();
     io::stdin().read_line(&mut mode).unwrap();
 
-    loop {
-        match mode.trim() {
-            "1" => {
-                standard_calculator();
-            }
-            "2" => {
-                rpn_calculator();
-            }
-            "exit" => {
-                break;
-            }
-            _ => {
-                println!("Invalid option");
-                break;
-            }
+    match mode.trim() {
+        "1" => {
+            standard_calculator();
+        }
+        "2" => {
+            rpn_calculator();
+        }
+        _ => {
+            println!("Invalid option");
         }
     }
 }
 
 fn standard_calculator() {
-    println!("Standard Calculator mode");
+    println!("Standard Calculator");
 
     loop {
         print!("Enter expression: ");
@@ -43,7 +40,10 @@ fn standard_calculator() {
 
         match evaluate_expression(input) {
             Ok(result) => {
-                println!("Result: {}", result);
+                unsafe {
+                    TOTAL_RESULT += result;
+                    println!("Current total: {}", TOTAL_RESULT);
+                }
             }
             Err(e) => {
                 println!("Error: {}", e);
@@ -133,7 +133,7 @@ fn rpn_calculator() {
                         operand1 / operand2
                     }
                     _ => {
-                        println!("Unknown operator");
+                        println!("Wrong input");
                         stack.push(operand1);
                         stack.push(operand2);
                         continue;
@@ -145,7 +145,11 @@ fn rpn_calculator() {
         }
 
         if stack.len() == 1 {
-            println!("Result: {}", stack.pop().unwrap());
+            let final_result = stack.pop().unwrap();
+            unsafe {
+                TOTAL_RESULT += final_result;
+                println!("Current total: {}", TOTAL_RESULT);
+            }
         } else if stack.len() > 1 {
             println!("Wrong input");
         }
