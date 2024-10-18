@@ -52,7 +52,7 @@ fn standard_calculator() {
     }
 }
 
-fn evaluate_expression(input: &str) -> Result<f64, &'static str> {
+fn evaluate_expression(input: &str) -> Result<f64, &str> {
     let tokens: Vec<&str> = input.split_whitespace().collect();
     let mut result = 0.0;
     let mut operation: Option<&str> = None;
